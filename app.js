@@ -1,15 +1,12 @@
-var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
 var logger = require("morgan");
 var cors = require("cors");
-
 var indexRouter = require("./routes/v1/index");
 const {errorConverter, errorHandler} = require("./middlewares/error");
 const ApiError = require("./utils/ApiError");
 const httpStatus = require("http-status");
 const {run, initBucket} = require("./config/database");
-const mongoose = require("mongoose");
 
 const app = express();
 
