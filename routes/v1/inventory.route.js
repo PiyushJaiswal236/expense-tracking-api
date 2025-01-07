@@ -19,16 +19,16 @@ router.get('/categories',
     inventoryController.getCategories
 );
 router.post('/items',
-    auth('manageSelf'),
     validate(inventoryValidation.addItem),
     upload.single('file'),
+    auth('manageSelf'),
     inventoryController.addItemToInventory,
 );
 router.patch('/items/:itemId',
+    upload.single('file'),
     auth('manageSelf'),
     validate(inventoryValidation.updateItem),
-    upload.single('file'),
-    inventoryController.updateItemFromInventory
+    inventoryController.updateItemFromInventory,
 )
 
 router.delete('/items/:itemId',

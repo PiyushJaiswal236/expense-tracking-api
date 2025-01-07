@@ -5,6 +5,8 @@ const config = require('../config/config');
 const storage = new GridFsStorage({
     url: config.mongoose.url,
     file: (req, file) => {
+        console.log(req);
+        console.log(file);
         return {
             fileName: file.originalname,
             bucketName: 'uploads',

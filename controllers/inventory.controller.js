@@ -17,7 +17,6 @@ const getCategories = catchAsync(async (req, res) => {
 const addItemToInventory = catchAsync(async (req, res) => {
     const inventoryId = req.user.inventory;
     const itemData = req.body
-    console.log(req)
     const updatedInventory = await inventoryService.addItemToInventory(inventoryId, itemData,req.file);
     res.status(httpStatus.CREATED).json({message: 'Item added to inventory', inventory: updatedInventory,statusCode:1});
 })
