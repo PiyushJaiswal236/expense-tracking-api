@@ -25,7 +25,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/",(req, res) => {
-    res.render("ExpenseTracking Api Server");
+    res.send("ExpenseTracking Api Server");
 })
 app.use("/v1", indexRouter);
 
