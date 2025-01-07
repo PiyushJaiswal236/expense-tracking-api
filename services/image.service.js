@@ -1,28 +1,40 @@
-const {getGFS, getbucket} = require("../config/database");
+const {getGFS, getBucket} = require("../config/database");
 const ApiError = require("../utils/ApiError");
 const httpStatus = require("http-status");
+const mongoose = require("mongoose");
 
 const uploadImage = async (file) => {
     return file;
 }
 
-const getImage = async (id, res) => {
+const getImage = async (fileId, res) => {
     try {
-        const GFS = getGFS()
-        await GFS.files.findOne({id: id}, (err, file) => {
-            if (!file || file.length === 0) {
-                return ApiError(httpStatus.NOT_FOUND, 'No file exists')
-            }
-            const readStream = GFS.createReadStream(file._id)
-            readStream.pipe(res);
-        });
+        const bucket = getBucket();
+        // Check if file exists
+        const file = await bucket.find({_id: new mongoose.Types.ObjectId(fileId)}).toArray();
+        if (file.length === 0) {
+            return res.status(404).json({error: {text: "File not found"}});
+        }
+
+        // set the headers
+        res.set("Content-Type", file[0].contentType);
+        res.set("Content-Disposition", `attachment; filename=${file[0].filename}.${file[0].contentType.split('/')[1]}`);
+
+        // create a stream to read from the bucket
+        const downloadStream = bucket.openDownloadStream(new mongoose.Types.ObjectId(fileId));
+        // pipe the stream to the response
+        downloadStream.pipe(res);
     } catch (error) {
-        console.log(error);
-        return ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Unable to upload file')
+        res.status(400).json({
+            error: {
+                text: `Unable to
+        download file`, error
+            }
+        });
     }
 }
 const deleteImage = async (id) => {
-    const bucket = getbucket();
+    const bucket = getBucket();
     const item = await bucket.delete(id);
     console.log("in image service")
     console.log(item);

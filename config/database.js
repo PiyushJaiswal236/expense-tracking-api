@@ -14,13 +14,17 @@ const run = async () => {
         // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
         await mongoose.connect(uri, clientOptions);
 
+        // Initialize GridFS
         gfs = Grid(mongoose.connection.db, mongoose.mongo);
-        gfs.collection('uploads');
-        await mongoose.connection.db.admin().command({ping: 1});
-        console.log(
-            "Pinged your deployment. You successfully connected to MongoDB!"
-        );
+        gfs.collection("uploads");
 
+        // Initialize GridFSBucket
+        mongoose.connection.on("connected", () => {
+            bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+                bucketName: "uploads",
+            });
+            console.log("Bucket connected!");
+        });
 
     } catch (error) {
         console.error("MongoDB connection error:", error);
@@ -41,9 +45,9 @@ const getGFS = () => {
     return gfs;
 };
 
-const  getbucket = () => {
+const  getBucket = () => {
     if (!bucket) throw new Error("Bucket is not initialized");
     return bucket;
 }
 
-module.exports = {run, getGFS,initBucket, getbucket};
+module.exports = {run, getGFS,initBucket, getBucket};

@@ -8,6 +8,7 @@ const httpStatus = require("http-status");
 const {imageService} = require("../../services");
 const mongoose = require("mongoose");
 const {getbucket} = require("../../config/database");
+const {saveToGridFS} = require("../../middlewares/files");
 const router = express.Router();
 
 router.get('/',
@@ -22,12 +23,14 @@ router.post('/items',
     auth('manageSelf'),
     validate(inventoryValidation.addItem),
     upload.single('file'),
+    saveToGridFS,
     inventoryController.addItemToInventory,
 );
 router.patch('/items/:itemId',
     auth('manageSelf'),
     validate(inventoryValidation.updateItem),
     upload.single('file'),
+    saveToGridFS,
     inventoryController.updateItemFromInventory
 )
 

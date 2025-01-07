@@ -2,30 +2,40 @@ const express = require("express");
 const router = express.Router();
 const {getbucket} = require("../../config/database");
 const mongoose = require("mongoose");
+const {getImage, deleteImage} = require("../../services/image.service");
+const catchAsync = require("../../utils/CatchAsync");
+const {upload, saveToGridFS} = require("../../middlewares/files");
+const {json} = require("express");
+const httpStatus = require("http-status");
+const auth = require("../../middlewares/auth");
 
 
-router.get("/:fileId", async (req, res) => {
+// router.get("/:fileId", async (req, res) => {
+//
+// });
+
+router.get("/:id", auth('user'), catchAsync(async (req, res) => {
+    const {id} = req.params;
     try {
-        const bucket = getbucket();
-        const {fileId} = req.params;
-        // Check if file exists
-        const file = await bucket.find({_id: new mongoose.Types.ObjectId(fileId)}).toArray();
-        if (file.length === 0) {
-            return res.status(404).json({error: {text: "File not found"}});
-        }
-
-        // set the headers
-        res.set("Content-Type", file[0].contentType);
-        res.set("Content-Disposition", `attachment; filename=${file[0].filename}.${file[0].contentType.split('/')[1]}`);
-
-        // create a stream to read from the bucket
-        const downloadStream = bucket.openDownloadStream(new mongoose.Types.ObjectId(fileId));
-        // pipe the stream to the response
-        downloadStream.pipe(res);
+        await getImage(id, res);
     } catch (error) {
-        res.status(400).json({error: {text: `Unable to 
-        download file`, error}});
+        res.status(error.statusCode || 500).send(error.message);
     }
-});
+}));
+
+router.post("/upload",auth('user'), upload.single("file"), saveToGridFS, async (req, res) => {
+    res.status(httpStatus.CREATED).json({body: req.body, fileId: req.fileId});
+})
+
+
+router.delete("/image/:id", auth('user'),catchAsync(async (req, res) => {
+    const {id} = req.params;
+    try {
+        await deleteImage(id);
+        res.status(200).send({message: "File deleted successfully."});
+    } catch (error) {
+        res.status(error.statusCode || 500).send(error.message);
+    }
+}));
 
 module.exports = router;

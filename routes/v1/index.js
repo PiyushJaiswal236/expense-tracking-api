@@ -6,6 +6,7 @@ const inventoryRouter = require("./inventory.route");
 const personsRouter = require("./persons.route");
 const ordersRouter = require("./orders.route");
 const collectionsRouter = require("./collections.route");
+const imageRouter = require("./image.route");
 const router = express.Router();
 
 // heath check route
@@ -25,5 +26,5 @@ router.use("/inventory", inventoryRouter);
 router.use("/persons", personsRouter);
 router.use("/orders", ordersRouter);
 router.use("/collections", collectionsRouter);
-
+router.use("/images", imageRouter);
 module.exports = router;
