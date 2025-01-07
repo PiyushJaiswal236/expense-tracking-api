@@ -11,7 +11,7 @@ const httpStatus = require("http-status");
 const {run, initBucket} = require("./config/database");
 const mongoose = require("mongoose");
 
-var app = express();
+const app = express();
 
 //enabling cors
 app.use(cors());
@@ -27,7 +27,11 @@ app.use(express.urlencoded({extended: false}));
 
 app.use(express.static(path.join(__dirname, "public")));
 
+app.get("/",(req, res) => {
+    res.render("ExpenseTracking Api Server");
+})
 app.use("/v1", indexRouter);
+
 // app.use("/users", usersRouter);
 
 // send back a 404 error for any unknown api request
