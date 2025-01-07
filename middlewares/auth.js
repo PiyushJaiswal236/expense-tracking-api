@@ -30,7 +30,7 @@ const auth =
                 return next(new ApiError(httpStatus.UNAUTHORIZED, "Invalid Token"));
             }
             req.user = await userService.getUserById(payload.sub);
-
+            console.log(req.user);
             if (!req.user) {
                 return next(
                     new ApiError(
@@ -42,6 +42,7 @@ const auth =
 
             if (requiredRights.length) {
                 const userRights = roleRights.get(req.user.role);
+                console.log(userRights)
                 const hasRequiredRights = requiredRights.every((requiredRight) =>
                     userRights.includes(requiredRight)
                 );

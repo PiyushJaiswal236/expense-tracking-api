@@ -26,17 +26,36 @@ const getUser = {
   }),
 };
 
+
+//
+// const updateUser = {
+//   params: Joi.object().keys({
+//     userId: Joi.required().custom(objectId),
+//   }),
+//   body: Joi.object()
+//     .keys({
+//       email: Joi.string().email(),
+//       password: Joi.string().custom(password),
+//       name: Joi.string(),
+//     })
+//     .min(1),
+// };
+
+
 const updateUser = {
   params: Joi.object().keys({
-    userId: Joi.required().custom(objectId),
+    userId: Joi.string().required().custom(objectId), // Validates the user ID as a valid MongoDB ObjectId
   }),
   body: Joi.object()
-    .keys({
-      email: Joi.string().email(),
-      password: Joi.string().custom(password),
-      name: Joi.string(),
-    })
-    .min(1),
+      .keys({
+        name: Joi.string().trim(),
+        email: Joi.string().email().trim().lowercase(),
+        password: Joi.string().custom(password), // Custom validation for the password
+        phoneNumber: Joi.string().trim(),
+        address: Joi.string().trim(),
+        city: Joi.string().trim(),
+      })
+      .min(1), // At least one field must be provided for update
 };
 
 const deleteUser = {
