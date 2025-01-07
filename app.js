@@ -5,12 +5,13 @@ var logger = require("morgan");
 var cors = require("cors");
 
 var indexRouter = require("./routes/v1/index");
-// var usersRouter = require("./routes/v1/users");
+const {errorConverter, errorHandler} = require("./middlewares/error");
+const ApiError = require("./utils/ApiError");
+const httpStatus = require("http-status");
+const {run, initBucket} = require("./config/database");
+const mongoose = require("mongoose");
 
 var app = express();
-
-//configure db
-require("./config/database");
 
 //enabling cors
 app.use(cors());
@@ -22,32 +23,33 @@ app.set("view engine", "jade");
 
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/v1", indexRouter);
 // app.use("/users", usersRouter);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
+// send back a 404 error for any unknown api request
+app.use((req, res, next) => {
+    next(new ApiError(httpStatus.NOT_FOUND, "Not found"));
 });
 
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+// convert error to ApiError, if needed
+app.use(errorConverter);
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
-});
+// handle error
+app.use(errorHandler);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
 
-module.exports = app;
+
+run().then(() => {
+    const port = process.env.PORT || 3000;
+    app.listen(port,"0.0.0.0", () => {
+        console.log(`Server is running on port ${port}`);
+    });
+}).catch(console.dir);
+initBucket().then()
+module.exports = {
+    app,
+};

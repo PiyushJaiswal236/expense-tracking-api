@@ -1,0 +1,43 @@
+components:
+  schemas:
+    Person:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Person ID
+        name:
+          type: string
+          description: Person's name
+        phoneNumber:
+          type: string
+          description: Person's phone number
+        shopNumber:
+          type: string
+          description: Shop number
+        email:
+          type: string
+          description: Email address
+        pendingAmount:
+          type: number
+          description: Pending amount
+        type:
+          type: string
+          enum: [customer, supplier]
+          description: Type of person (customer or supplier)
+        orders:
+          type: array
+          items:
+            type: string
+            description: Order IDs associated with the person
+        totalOverdue:
+          type: number
+          description: Total overdue amount
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp

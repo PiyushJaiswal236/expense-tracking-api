@@ -1,0 +1,41 @@
+components:
+  schemas:
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the item
+          example: "64c72efc25e4a23d8c59b6e"
+        name:
+          type: string
+          description: Name of the item
+          example: "Broccoli"
+        category:
+          type: string
+          description: Category of the item
+          enum:
+            - Fresh Vegetables
+            - Fresh Fruits
+            - Seasonal
+            - Leafy & Herbs
+            - Frozen Veg
+          example: "Fresh Vegetables"
+        image:
+          type: string
+          format: ObjectId
+          description: Reference to the image file in the uploads.files collection
+          example: "64f72efc25e4a23d8c59b6f"
+        description:
+          type: string
+          description: Detailed description of the item
+          example: "Freshly harvested broccoli rich in nutrients."
+      required:
+        - name
+        - category
+      example:
+        id: "64c72efc25e4a23d8c59b6e"
+        name: "Broccoli"
+        category: "Fresh Vegetables"
+        image: "64f72efc25e4a23d8c59b6f"
+        description: "Freshly harvested broccoli rich in nutrients."

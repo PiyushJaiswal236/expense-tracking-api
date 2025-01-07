@@ -1,0 +1,66 @@
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the order
+        type:
+          type: string
+          enum:
+            - sale
+            - purchase
+          description: Type of the order
+        status:
+          type: string
+          enum:
+            - completed
+            - pending
+          description: Current status of the order
+        person:
+          type: string
+          description: Reference to the person associated with the order
+        purchaseItemList:
+          type: array
+          items:
+            type: object
+            properties:
+              itemId:
+                type: string
+                description: Unique identifier for the item
+              quantity:
+                type: integer
+                description: Quantity of the item
+                example: 10
+              price:
+                type: number
+                format: float
+                description: Price of the item
+                example: 15.50
+        amountPaid:
+          type: number
+          format: float
+          description: Total amount paid for the order
+          example: 150.00
+        totalAmount:
+          type: number
+          format: float
+          description: Total amount of the order
+          example: 200.00
+      required:
+        - type
+        - status
+        - person
+        - purchaseItemList
+      example:
+        id: "645c72efc25e4a23d8c59b6e"
+        type: sale
+        status: completed
+        person: "605c72efc25e4a23d8c59b6e"
+        purchaseItemList:
+          - itemId: "605c72efc25e4a23d8c59b6f"
+            quantity: 5
+            price: 20.00
+        amountPaid: 100.00
+        totalAmount: 120.00

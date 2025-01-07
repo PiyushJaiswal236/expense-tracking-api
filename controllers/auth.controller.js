@@ -5,6 +5,7 @@ const {
   userService,
   tokenService,
   emailService,
+  smsService,
 } = require("../services");
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -29,11 +30,13 @@ const refreshTokens = catchAsync(async (req, res) => {
   res.send({ ...tokens });
 });
 
+// TODO : implement pheone no otp generation
 const forgotPassword = catchAsync(async (req, res) => {
-  const resetPasswordToken = await tokenService.generateResetPasswordToken(
-    req.body.email
-  );
-  await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
+  // const resetPasswordToken = await tokenService.generateResetPasswordToken(
+  //   req.body.email
+  // );
+  await smsService.sendOtpSms("7499582803");
+  // await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
   res.status(httpStatus.NO_CONTENT).send();
 });
 

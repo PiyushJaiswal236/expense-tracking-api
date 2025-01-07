@@ -4,6 +4,7 @@ const userService = require("./user.service");
 const Token = require("../models/token.model");
 const ApiError = require("../utils/ApiError");
 const { tokenTypes } = require("../config/tokens");
+const logger = require("../config/logger");
 
 /**
  * Login with username and password
@@ -49,11 +50,12 @@ const refreshAuth = async (refreshToken) => {
     );
     const user = await userService.getUserById(refreshTokenDoc.user);
     if (!user) {
-      throw new Error();
+      throw new ApiError(httpStatus.UNAUTHORIZED, "User not found");
     }
-    await refreshTokenDoc.remove();
+    await Token.findByIdAndDelete(refreshTokenDoc._id);
     return tokenService.generateAuthTokens(user);
   } catch (error) {
+    logger.error(error);
     throw new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate");
   }
 };

@@ -1,0 +1,22 @@
+components:
+  schemas:
+    Inventory:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Reference to the user owning the inventory
+          example: "605c72efc25e4a23d8c59b6e"
+        items:
+          type: array
+          items:
+            type: string
+            description: Reference to an item in the inventory
+            example: "605c72efc25e4a23d8c59b6f"
+      required:
+        - userId
+      example:
+        userId: "605c72efc25e4a23d8c59b6e"
+        items:
+          - "605c72efc25e4a23d8c59b6f"
+          - "605c72efc25e4a23d8c59b70"
