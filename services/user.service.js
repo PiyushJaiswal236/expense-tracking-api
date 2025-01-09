@@ -24,7 +24,7 @@ const createUser = async (userBody) => {
  * Query for users
  * @param {Object} filter - Mongo filter
  * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc),
  * @param {number} [options.limit] - Maximum number of results per page (default = 10)
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
@@ -116,8 +116,11 @@ const getUserWithPopulatedFields = async (email) => {
 
 const updateUserById = async (userId, updateBody) => {
     let user = await getUserById(userId);
-    if (user.password !== undefined) {
-       await  User.isPasswordMatch()
+    if (updateBody.password !== undefined) {
+       const res = await  user.isPasswordMatch(updateBody.password);
+       if (res===false) {
+           throw new ApiError(httpStatus.UNAUTHORIZED, "User Passwords do not match with original password");
+       }
     }
     if (!user) {
         throw new ApiError(httpStatus.NOT_FOUND, "User not found");
