@@ -107,7 +107,6 @@ const getUserWithPopulatedFields = async (email) => {
 };
 
 
-
 /**
  * Update user by id
  * @param {ObjectId} userId
@@ -117,13 +116,16 @@ const getUserWithPopulatedFields = async (email) => {
 
 const updateUserById = async (userId, updateBody) => {
     let user = await getUserById(userId);
+    if (user.password !== undefined) {
+       await  User.isPasswordMatch()
+    }
     if (!user) {
         throw new ApiError(httpStatus.NOT_FOUND, "User not found");
     }
     if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
     }
-    user = await User.findByIdAndUpdate(userId, updateBody,{new: true});
+    user = await User.findByIdAndUpdate(userId, updateBody, {new: true});
     return user;
 };
 

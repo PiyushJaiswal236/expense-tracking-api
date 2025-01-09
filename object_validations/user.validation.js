@@ -50,7 +50,8 @@ const updateUser = {
       .keys({
         name: Joi.string().trim(),
         email: Joi.string().email().trim().lowercase(),
-        password: Joi.string().custom(password), // Custom validation for the password
+        changePassword: Joi.string().custom(password), // Custom validation for the password
+        confirmPassword: Joi.string().custom(password), // Custom validation for the password
         phoneNumber: Joi.string().trim(),
         address: Joi.string().trim(),
         city: Joi.string().trim(),
