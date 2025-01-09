@@ -36,6 +36,9 @@ const collectionSchema = mongoose.Schema(
                 }
             }
         }],
+    },
+    {
+        timestamps: true,
     }
 )
 collectionSchema.plugin(toJSON);

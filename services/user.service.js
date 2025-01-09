@@ -55,12 +55,66 @@ const getUserById = async (id, fieldsToSelect = null) => {
 const getUserByEmail = async (email) => {
     return User.findOne({email});
 };
+
+
+const getUserWithPopulatedFields = async (email) => {
+    try {
+        const user = await User.findOne({email})
+            .populate({
+                path: 'inventory', // Populate the inventory field
+                populate: {
+                    path: 'items', // Populate the items inside the inventory
+                    select: 'name description', // Select specific fields to include from the Item model
+                },
+            })
+            .populate({
+                path: 'persons', // Populate the persons array
+                populate: {
+                    path: 'orders', // Populate the orders inside persons
+                    select: 'status totalAmount', // Select specific fields to include from Order model
+                    populate: {
+                        path: 'person', // Populate person field inside orders (if needed)
+                        select: 'name type', // Select specific fields to include from Person model
+                    },
+                },
+            })
+            .populate({
+                path: 'orders', // Populate the orders array
+                populate: [
+                    {
+                        path: 'person', // Populate the person reference inside orders
+                        select: 'name phoneNumber', // Select specific fields from Person model
+                    },
+                    {
+                        path: 'user', // Populate the user reference inside orders
+                        select: 'name email', // Select specific fields from User model
+                    },
+                    {
+                        path: 'purchaseItemList.item', // Populate the items inside purchaseItemList in orders
+                        select: 'name price unit', // Select specific fields from Item model
+                    },
+                ],
+            });
+
+        if (!user) {
+            throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+        }
+        return user;
+    } catch (error) {
+        console.error(error);
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error populating user data');
+    }
+};
+
+
+
 /**
  * Update user by id
  * @param {ObjectId} userId
  * @param {Object} updateBody
  * @returns {Promise<User>}
  */
+
 const updateUserById = async (userId, updateBody) => {
     let user = await getUserById(userId);
     if (!user) {
@@ -92,6 +146,7 @@ module.exports = {
     queryUsers,
     getUserById,
     getUserByEmail,
+    getUserWithPopulatedFields,
     updateUserById,
     deleteUserById,
 };

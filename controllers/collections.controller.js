@@ -20,7 +20,7 @@ const createCollection = catchAsync(async (req, res) => {
 
 const getCollections = catchAsync(async (req, res) => {
         const options = pick(req.query, ['sortBy', 'limit', 'page']);
-        const filter = pick(req.query, ['status', 'type']);
+        const filter = pick(req.query, []);
         filter.user = req.user.id;
         const collections = await collectionService.getAllCollections(filter,options,);
         res.status(httpStatus.CREATED).json(
@@ -31,9 +31,23 @@ const getCollections = catchAsync(async (req, res) => {
         );
     }
 )
+const addAmountToCollectionForUser = catchAsync(async (req, res) => {
+        const collectionId = req.body.collectionId;
+        const amount = req.body.amount;
+        const collections = await collectionService.addAmountToCollectionForUser(req.user.id,collectionId,amount);
+        res.status(httpStatus.CREATED).json(
+            {
+                statusCode:1,
+                message: 'Successfully added amount in collections',
+                collections: collections
+            }
+        );
+    }
+)
 
 
 module.exports = {
     createCollection,
     getCollections,
+    addAmountToCollectionForUser,
 }

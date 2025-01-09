@@ -3,12 +3,12 @@ const auth = require("../../middlewares/auth");
 const {inventoryController} = require("../../controllers");
 const {inventoryValidation} = require("../../object_validations");
 const validate = require("../../middlewares/validate");
-const upload = require("../../middlewares/upload");
+
 const httpStatus = require("http-status");
 const {imageService} = require("../../services");
 const mongoose = require("mongoose");
 const {getbucket} = require("../../config/database");
-const {saveToGridFS} = require("../../middlewares/files");
+const {saveToGridFS, upload} = require("../../middlewares/files");
 const router = express.Router();
 
 router.get('/',

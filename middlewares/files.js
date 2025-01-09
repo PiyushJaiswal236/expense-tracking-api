@@ -1,21 +1,24 @@
 const multer = require("multer");
 const mongoose = require("mongoose");
 const GridFSBucket = require("mongodb").GridFSBucket;
-const { run, getBucket } = require('../config/database'); // Assuming this initializes your database connection and bucket
-
+const {run, getBucket} = require('../config/database'); // Assuming this initializes your database connection and bucket
+const mime = require('mime-types');
 // Initialize storage for multer (memory storage to process files manually)
 const storage = multer.memoryStorage();
 
 // Initialize multer
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 2 * 1024 * 1024 }, // Limit file size to 2MB
+    limits: {fileSize: 2 * 1024 * 1024}, // Limit file size to 2MB
     fileFilter: (req, file, cb) => {
         // Validate file type
-        if (file.mimetype.startsWith("image/")) {
+        const ext = file.originalname.split('.').pop();
+        const mimetype = mime.lookup(ext) || 'application/octet-stream';
+        if (mimetype.startsWith('image/')) {
+            file.mimetype = mimetype;
             cb(null, true);
         } else {
-            cb(new Error("Invalid file type! Only images are allowed."));
+            cb(new Error('Invalid file type! Only images are allowed.'));
         }
     },
 });
@@ -23,10 +26,10 @@ const upload = multer({
 const saveToGridFS = async (req, res, next) => {
     try {
         const file = req.file;
-        if (!file) {
+        if (file === undefined) {
             console.log("Request does not have file");
             console.log("Proceeding without uploading");
-            next();
+            return next();
         }
 
         const bucket = getBucket();
@@ -55,4 +58,4 @@ const saveToGridFS = async (req, res, next) => {
     }
 };
 
-module.exports = { upload, saveToGridFS };
+module.exports = {upload, saveToGridFS};

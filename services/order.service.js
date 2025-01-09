@@ -39,7 +39,7 @@ const createOrder = async (user, orderBody) => {
         ...orderBody,
         user: user.id
     }
-
+    console.log(orderBody)
     const order = await Order.create(orderBody);
     user.orders.push(order.id);
     if (order.type === "sale") {

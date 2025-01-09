@@ -52,7 +52,7 @@ const getTransactionHistory = async (collectionId) => {
 
 const createCollectionForUser = async (userId, file, collectionData) => {
     try {
-        console.log(collectionData)
+        console.log(file)
         console.log(userId)
         collectionData.user = userId;
         if (file !== undefined) {
@@ -90,6 +90,8 @@ const addAmountToCollectionForUser = async (userId, collectionId, amountToAdd) =
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Error adding amount to collection for user: ${error}`);
     }
 };
+
+
 
 const updateCollectionForUser = async (userId, collectionId, updateData) => {
     try {

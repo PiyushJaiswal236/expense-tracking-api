@@ -3,8 +3,8 @@ const auth = require("../../middlewares/auth");
 const validate = require("../../middlewares/validate");
 const {personController} = require("../../controllers");
 const {personValidation} = require("../../object_validations");
-const upload = require("../../middlewares/upload");
-const {saveToGridFS} = require("../../middlewares/files");
+
+const {saveToGridFS, upload} = require("../../middlewares/files");
 
 const router = express.Router();
 

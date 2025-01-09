@@ -28,11 +28,23 @@ let toJSON = (schema) => {
         }
       });
 
-      ret.id = ret._id.toString();
-      delete ret._id;
+      // Check if ret._id exists before trying to call toString()
+      if (ret._id !== undefined) {
+        ret.id = ret._id.toString();
+        delete ret._id;
+      } else {
+        // In case _id is not found, set id directly from the existing id
+        if (ret.id === undefined) {
+          ret.id = null;
+        }
+      }
+
+      // Remove unnecessary fields
       delete ret.__v;
       // delete ret.createdAt;
       // delete ret.updatedAt;
+
+      // If transform function exists, call it
       if (transform) {
         return transform(doc, ret, options);
       }

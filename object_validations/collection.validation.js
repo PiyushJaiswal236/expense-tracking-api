@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const {emptyString} = require("./custom.validation");
+const {emptyString, objectId} = require("./custom.validation");
 
 
 const  getCollection = Joi.object().keys({
@@ -18,10 +18,18 @@ const createCollection = {
         }
     ),
 }
+const addAmountToCollectionForUser = {
+    body: Joi.object().keys({
+            collectionId: Joi.custom(objectId).required(),
+            amount: Joi.number().integer().min(0),
+        }
+    ),
+}
 
 
 module.exports = {
     getCollection,
     createCollection,
+    addAmountToCollectionForUser
 
 }

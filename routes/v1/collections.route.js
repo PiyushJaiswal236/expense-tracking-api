@@ -3,7 +3,8 @@ const auth = require("../../middlewares/auth");
 const validate = require("../../middlewares/validate");
 const {collectionsController} = require("../../controllers");
 const {collectionValidation} = require("../../object_validations");
-const upload = require("../../middlewares/upload");
+const {upload, saveToGridFS} = require("../../middlewares/files");
+
 
 const router = express.Router();
 
@@ -18,8 +19,16 @@ router.post(
     "/",
     auth("manageSelf"),
     upload.single("file"),
+    saveToGridFS,
     validate(collectionValidation.createCollection),
     collectionsController.createCollection
+);
+
+router.post(
+    "/add-amount",
+    auth("manageSelf"),
+    validate(collectionValidation.addAmountToCollectionForUser),
+    collectionsController.addAmountToCollectionForUser
 );
 
 module.exports = router;
