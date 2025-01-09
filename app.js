@@ -44,7 +44,7 @@ app.use(errorHandler);
 
 const selfPing = () => {
     setInterval(() => {
-        http.get(`http://localhost:${process.env.PORT || 3000}`, (res) => {
+        http.get(`https://expense-tracking-api-0tiy.onrender.com:${process.env.PORT || 3000}`, (res) => {
             console.log('Pinged server, status:', res.statusCode);
         }).on('error', (err) => {
             console.error('Error pinging server:', err);
