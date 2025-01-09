@@ -24,7 +24,7 @@ app.use(express.urlencoded({extended: false}));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/",(req, res) => {
+app.get("/", (req, res) => {
     res.send("ExpenseTracking Api Server");
 })
 app.use("/v1", indexRouter);
@@ -42,7 +42,15 @@ app.use(errorConverter);
 // handle error
 app.use(errorHandler);
 
-
+const selfPing = () => {
+    setInterval(() => {
+        http.get(`http://localhost:${process.env.PORT || 3000}`, (res) => {
+            console.log('Pinged server, status:', res.statusCode);
+        }).on('error', (err) => {
+            console.error('Error pinging server:', err);
+        });
+    }, 5 * 60 * 1000); // Ping every 5 minutes
+};
 
 run().then(() => {
     const port = process.env.PORT || 3000;
