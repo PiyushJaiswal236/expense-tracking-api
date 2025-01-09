@@ -97,7 +97,7 @@ const getUserWithPopulatedFields = async (email) => {
             });
 
         if (!user) {
-            throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+            return new ApiError(httpStatus.NOT_FOUND, 'User not found');
         }
         return user;
     } catch (error) {
