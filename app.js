@@ -7,6 +7,7 @@ const {errorConverter, errorHandler} = require("./middlewares/error");
 const ApiError = require("./utils/ApiError");
 const httpStatus = require("http-status");
 const {run, initBucket} = require("./config/database");
+const {get} = require("node:https");
 
 const app = express();
 
@@ -44,14 +45,14 @@ app.use(errorHandler);
 
 const selfPing = () => {
     setInterval(() => {
-        http.get(`https://expense-tracking-api-0tiy.onrender.com:${process.env.PORT || 3000}`, (res) => {
+        get(`https://expense-tracking-api-0tiy.onrender.com`, (res) => {
             console.log('Pinged server, status:', res.statusCode);
         }).on('error', (err) => {
             console.error('Error pinging server:', err);
         });
-    }, 5 * 60 * 1000); // Ping every 5 minutes
+    },  60*5*1000); // Ping every 5 minutes
 };
-
+selfPing()
 run().then(() => {
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
