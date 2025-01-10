@@ -2,13 +2,18 @@ const httpStatus = require("http-status");
 const {User} = require("../models");
 const ApiError = require("../utils/ApiError");
 const Inventory = require("../models/inventory.model");
+const imageService = require("./image.service");
 
 /**
  * Create a user
  * @param {Object} userBody
+ * @param file
  * @returns {Promise<User>}
  */
-const createUser = async (userBody) => {
+const createUser = async (userBody, file) => {
+    if (file !== undefined) {
+        userBody.image = file.id;
+    }
     if (await User.isEmailTaken(userBody.email)) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
     }
@@ -111,10 +116,11 @@ const getUserWithPopulatedFields = async (email) => {
  * Update user by id
  * @param {ObjectId} userId
  * @param {Object} updateBody
+ * @param file
  * @returns {Promise<User>}
  */
 
-const updateUserById = async (userId, updateBody) => {
+const updateUserById = async (userId, updateBody,file) => {
     let user = await getUserById(userId);
     if (updateBody.password !== undefined) {
        const res = await  user.isPasswordMatch(updateBody.password);
@@ -129,6 +135,14 @@ const updateUserById = async (userId, updateBody) => {
         throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
     }
     user = await User.findByIdAndUpdate(userId, updateBody, {new: true});
+    const oldimg = user.image;
+    await imageService.deleteImage(oldimg);
+
+    if (file !== undefined) {
+        user.image = file.id;
+        await user.save();
+    }
+
     return user;
 };
 

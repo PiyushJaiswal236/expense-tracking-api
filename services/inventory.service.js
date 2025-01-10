@@ -33,8 +33,6 @@ const addItemToInventory = async (inventoryId, itemData, file) => {
 const updateItemFromInventory = async (itemId, itemData,file) => {
 
     const item = await Item.findByIdAndUpdate(itemId, itemData, );
-    console.log("oldimg id")
-    console.log("img"+item.image)
 
     const oldimg = item.image;
     await imageService.deleteImage(oldimg);
@@ -43,8 +41,6 @@ const updateItemFromInventory = async (itemId, itemData,file) => {
         item.image = file.id;
         await item.save();
     }
-    console.log("new id")
-    console.log(item.image)
 
     if (!item) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Item not found');

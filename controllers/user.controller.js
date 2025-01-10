@@ -4,8 +4,11 @@ const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/CatchAsync");
 const { userService } = require("../services");
 
-const createUser = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body);
+const createUser = catchAsync(async (req, res,file) => {
+  if (file !== undefined) {
+    req.body.image = file.id;
+  }
+  const user = await userService.createUser(req.body,req.file);
   res.status(httpStatus.CREATED).send(user);
 });
 
@@ -25,7 +28,7 @@ const getUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
-  const user = await userService.updateUserById(req.params.userId, req.body);
+  const user = await userService.updateUserById(req.params.userId, req.body,req.file);
   res.send(user);
 });
 

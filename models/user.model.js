@@ -6,6 +6,10 @@ const {roles} = require("../config/roles");
 
 const userSchema = mongoose.Schema(
     {
+        image:{
+          type:mongoose.Schema.Types.ObjectId,
+          ref:"uploads.files",
+        },
         name: {
             type: String,
             required: true,
@@ -36,10 +40,6 @@ const userSchema = mongoose.Schema(
                 }
             },
             private: true, // used by the toJSON plugin
-        },
-        image: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Uploads.files",
         },
         phoneNumber: {
             type: String,

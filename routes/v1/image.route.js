@@ -14,7 +14,7 @@ const auth = require("../../middlewares/auth");
 //
 // });
 
-router.get("/:id", auth('user'), catchAsync(async (req, res) => {
+router.get("/:id", catchAsync(async (req, res) => {
     const {id} = req.params;
     try {
         await getImage(id, res);

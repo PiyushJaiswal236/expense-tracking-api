@@ -3,6 +3,7 @@ const validate = require("../../middlewares/validate");
 const userController = require("../../controllers/user.controller");
 const auth = require("../../middlewares/auth");
 const { userValidation } = require("../../object_validations");
+const {upload, saveToGridFS} = require("../../middlewares/files");
 var router = express.Router();
 
 router
@@ -27,7 +28,9 @@ router
   )
   .patch(
     auth("manageSelf"),
+    upload.single("file"),
     validate(userValidation.updateUser),
+    saveToGridFS,
     userController.updateUser
   )
   .delete(
