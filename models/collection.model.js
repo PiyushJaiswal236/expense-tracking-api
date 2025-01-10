@@ -17,6 +17,7 @@ const collectionSchema = mongoose.Schema(
         },
         amount: {
             type: Number,
+            default: 0,
         },
         agentName: {
             type: String,

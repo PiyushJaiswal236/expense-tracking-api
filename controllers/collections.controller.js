@@ -34,6 +34,18 @@ const getCollections = catchAsync(async (req, res) => {
 const addAmountToCollectionForUser = catchAsync(async (req, res) => {
         const collectionId = req.body.collectionId;
         const amount = req.body.amount;
+    console.log(typeof  amount)
+    console.log(typeof  amount)
+    console.log(typeof  amount)
+    console.log(typeof  amount)
+    console.log(typeof  amount)
+    console.log(typeof  amount)
+    console.log(typeof  amount)
+    console.log(  amount)
+    console.log(  amount)
+    console.log(  amount)
+    console.log(typeof  amount)
+    console.log(typeof  amount)
         const collections = await collectionService.addAmountToCollectionForUser(req.user.id,collectionId,amount);
         res.status(httpStatus.CREATED).json(
             {
