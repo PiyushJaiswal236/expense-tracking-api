@@ -17,7 +17,7 @@ const createPerson = {
     body: Joi.object().keys({
         name: Joi.string().custom(emptyString).required(),
         phoneNumber: Joi.string().custom(emptyString).required(),
-        shopNo: Joi.string(),
+        shopNumber: Joi.string(),
         email: Joi.string().email(),
         totalOverdue: Joi.number().integer().min(0),
         type: Joi.string().valid("customer", "supplier").required(),

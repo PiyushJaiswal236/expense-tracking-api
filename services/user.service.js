@@ -79,7 +79,7 @@ const getUserWithPopulatedFields = async (email) => {
                     select: 'status totalAmount', // Select specific fields to include from Order model
                     populate: {
                         path: 'person', // Populate person field inside orders (if needed)
-                        select: 'name type', // Select specific fields to include from Person model
+                        select: 'name type shopNumber', // Select specific fields to include from Person model
                     },
                 },
             })

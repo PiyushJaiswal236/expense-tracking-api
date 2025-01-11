@@ -30,6 +30,9 @@ router.delete("/:orderId",
     ordersController.deleteOrder
 );
 
+router.get("/report", auth("manageSelf"), ordersController.getReport,);
+
+
 module.exports = router;
 
 /**
@@ -125,6 +128,117 @@ module.exports = router;
  *               endDate: "2023-12-31T23:59:59.999Z"
  *               minAmount: 500
  *               maxAmount: 1500
+ *       '400':
+ *         $ref: '#/components/responses/BadRequest'
+ *       '401':
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+
+
+/**
+ * @swagger
+ * /orders/report:
+ *   get:
+ *     summary: Get report
+ *     description: Logged-in users can fetch a report based on various filters.
+ *     tags: [Orders]
+ *     security:
+ *       - jwtAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: personId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: 5f8f8c44b54764421b7156e8
+ *       - in: query
+ *         name: status
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: completed
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - customer
+ *             - supplier
+ *       - in: query
+ *         name: sortBy
+ *         required: false
+ *         schema:
+ *           type: string
+ *         example: createdAt:desc
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         example: 10
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *       - in: query
+ *         name: startDate
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         example: 2023-01-01T00:00:00Z
+ *       - in: query
+ *         name: endDate
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         example: 2023-12-31T23:59:59Z
+ *       - in: query
+ *         name: minAmount
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 100.00
+ *       - in: query
+ *         name: maxAmount
+ *         required: false
+ *         schema:
+ *           type: number
+ *           example: 1000.00
+ *     responses:
+ *       '200':
+ *         description: Report fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 1
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Order'
+ *                 totalResults:
+ *                   type: integer
+ *                   example: 10
+ *                 total:
+ *                   type: integer
+ *                   example: 100
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 10
+ *                 limit:
+ *                   type: integer
+ *                   example: 10
  *       '400':
  *         $ref: '#/components/responses/BadRequest'
  *       '401':
@@ -243,6 +357,8 @@ module.exports = router;
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  */
+
+
 /**
  * @swagger
  * /orders/{orderId}:

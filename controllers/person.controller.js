@@ -15,7 +15,7 @@ const getPersons= catchAsync(async (req, res) => {
 
 const createPerson = catchAsync(async (req, res) => {
     const user = req.user;
-    const personBody = pick(req.body ,['name','type','email','phoneNumber','shopNo']);
+    const personBody = pick(req.body ,['name','type','email','phoneNumber','shopNumber']);
     personBody.totalOverdue = req.body.pendingAmount;
     const person = await personService.createPerson(user,personBody,req.file);
     res.status(httpStatus.OK).send(person);
