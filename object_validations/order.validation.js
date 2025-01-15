@@ -29,6 +29,7 @@ const createOrder = {
             unit:Joi.string().valid("kilogram", "gram","number").required(),
         })).min(1).required(),
         amountPaid: Joi.number().min(0).required(),
+        personName: Joi.string(),
         shopNumber: Joi.string().custom(emptyString),
         totalAmount: Joi.forbidden(),
     })

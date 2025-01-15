@@ -5,7 +5,6 @@ const itemSchema = mongoose.Schema(
     {
         name: {
             type: String,
-            required: true,
         },
         category: {
             type: String,
@@ -46,3 +45,5 @@ itemSchema.statics.isExistById = async function (id) {
 
 const Item = mongoose.model('Item', itemSchema);
 module.exports = Item;
+
+

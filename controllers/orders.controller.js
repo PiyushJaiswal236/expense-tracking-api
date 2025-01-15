@@ -34,6 +34,13 @@ const getReport = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(result);
 });
 
+const getOrderByGroup = catchAsync(async (req, res) => {
+  const result = await orderService.getOrderGroupedByDateAndPerson(req.user.id,req.query);
+  res.status(httpStatus.OK).send(result);
+});
+
+
+
 const createOrder = catchAsync(async (req, res) => {
   const order = await orderService.createOrder(req.user, req.body);
   res.status(httpStatus.CREATED).send(order);
@@ -55,6 +62,7 @@ const deleteOrder = catchAsync(async (req, res) => {
 });
 module.exports = {
   getAllOrders,
+  getOrderByGroup,
   getReport,
   createOrder,
   updateOrder,
