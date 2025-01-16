@@ -22,6 +22,7 @@ const createOrder = {
         type: Joi.string().valid("sale", "purchase").required(),
         status: Joi.forbidden(),
         person: Joi.custom(objectId).required(),
+        phoneNumber: Joi.string().valid(),
         purchaseItemList: Joi.array().items(Joi.object().keys({
             item: Joi.custom(objectId).required(),
             quantity: Joi.number().required().min(1),

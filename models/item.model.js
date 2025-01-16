@@ -5,6 +5,7 @@ const itemSchema = mongoose.Schema(
     {
         name: {
             type: String,
+            required: true
         },
         category: {
             type: String,

@@ -18,11 +18,11 @@ const createPerson = {
         name: Joi.string().custom(emptyString).required(),
         phoneNumber: Joi.string().custom(emptyString).required(),
         shopNumber: Joi.string(),
-        email: Joi.string().email(),
+        email: Joi.string().allow(),
         totalOverdue: Joi.number().integer().min(0),
         type: Joi.string().valid("customer", "supplier").required(),
         orders: Joi.array().items(Joi.custom(objectId)),
-        pendingAmount: Joi.number().positive(),
+        pendingAmount: Joi.number().min(0),
     })
 }
 const updatePerson = {

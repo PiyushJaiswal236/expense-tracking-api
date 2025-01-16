@@ -5,7 +5,7 @@ const httpStatus = require("http-status");
 //todo ask  permission to sir to  add check for shop no, phoneNo,email already taken conditions should me implemented or not
 const createPerson = async (user, personBody, file) => {
     personBody.user = user;
-    console.log(personBody);
+    console.log("create personbody",personBody);
     const person = await Person.create(personBody);
     user.persons.push(person.id);
     if (file !== undefined) {

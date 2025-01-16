@@ -1,8 +1,9 @@
-const {Order, Item, Person, User} = require("../models");
+const {Order, Item, Person, User, Inventory} = require("../models");
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const mongoose = require("mongoose");
 const {ObjectId} = require("mongodb");
+const {inventoryService} = require("./index");
 
 const getAllOrders = async (filter, options) => {
     try {
@@ -293,17 +294,21 @@ const createOrder = async (user, orderBody) => {
                 : "A Purchase order cannot be placed for Customer";
         throw new ApiError(httpStatus.BAD_REQUEST, errorMessage);
     }
-    const {inventory} = await User.findById(user.id)
-        .select("inventory")
-        .populate("inventory");
-    for (const item of orderBody.purchaseItemList) {
-        if (!inventory.items.includes(item.item)) {
-            throw new ApiError(
-                httpStatus.NOT_FOUND,
-                `Item with id ${item.item} not found`
-            );
+        const {inventory} = await User.findById(user.id)
+            .select("inventory")
+            .populate("inventory");
+        for (const item of orderBody.purchaseItemList) {
+            if (!inventory.items.includes(item.item)) {
+                if(orderBody.type === "sale") {
+                    throw new ApiError(
+                        httpStatus.NOT_FOUND,
+                        `Item with id ${item.item} not found`
+                    );
+                }
+                await inventoryService.addItemToInventory(inventory.id,item)
+            }
         }
-    }
+
     console.log("logggggg");
     console.log(orderBody);
     orderBody = {
