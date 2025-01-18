@@ -3,6 +3,7 @@ const {User} = require("../models");
 const ApiError = require("../utils/ApiError");
 const Inventory = require("../models/inventory.model");
 const imageService = require("./image.service");
+const bcrypt = require("bcryptjs");
 
 /**
  * Create a user
@@ -120,13 +121,16 @@ const getUserWithPopulatedFields = async (email) => {
  * @returns {Promise<User>}
  */
 
-const updateUserById = async (userId, updateBody,file) => {
+const updateUserById = async (userId, updateBody, file) => {
     let user = await getUserById(userId);
-    if (updateBody.password !== undefined) {
-       const res = await  user.isPasswordMatch(updateBody.password);
-       if (res===false) {
-           throw new ApiError(httpStatus.UNAUTHORIZED, "User Passwords do not match with original password");
-       }
+    console.log(!(updateBody.confirmPassword === undefined))
+    console.log(updateBody.confirmPassword !== undefined)
+    if (updateBody.confirmPassword !== undefined) {
+        const res = await user.isPasswordMatch(updateBody.changePassword);
+        if (res === false) {
+            throw new ApiError(httpStatus.UNAUTHORIZED, "User Passwords do not match with original password");
+        }
+        updateBody.password = await bcrypt.hash(updateBody.confirmPassword, 8);
     }
     if (!user) {
         throw new ApiError(httpStatus.NOT_FOUND, "User not found");
@@ -134,11 +138,14 @@ const updateUserById = async (userId, updateBody,file) => {
     if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
     }
+
+    console.log("update Body");
+    console.log(updateBody)
     user = await User.findByIdAndUpdate(userId, updateBody, {new: true});
-    const oldimg = user.image;
-    await imageService.deleteImage(oldimg);
 
     if (file !== undefined) {
+        const oldimg = user.image;
+        await imageService.deleteImage(oldimg);
         user.image = file.id;
         await user.save();
     }

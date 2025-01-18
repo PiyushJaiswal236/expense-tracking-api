@@ -326,6 +326,7 @@ const createOrder = async (user, orderBody) => {
     await user.save();
     person.user= user.id;
     person.orders.push(order.id);
+    person.shopNumber = orderBody.shopNumber;
     person.totalOverdue = person.totalOverdue + order.amountPending;
     await person.save();
 

@@ -2,7 +2,6 @@ const {Person, User, Order} = require("../models");
 const ApiError = require("../utils/ApiError");
 const httpStatus = require("http-status");
 
-//todo ask  permission to sir to  add check for shop no, phoneNo,email already taken conditions should me implemented or not
 const createPerson = async (user, personBody, file) => {
     personBody.user = user;
     console.log("create personbody",personBody);
