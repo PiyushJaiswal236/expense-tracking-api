@@ -19,6 +19,11 @@ router
     userController.getUsers
   );
 
+router.get("/short-summery/",
+    auth("getSelf"),
+    userController.getUserShortSummery
+);
+
 router
   .route("/:userId")
   .get(
@@ -38,6 +43,7 @@ router
     validate(userValidation.deleteUser),
     userController.deleteUser
   );
+
 
 
 module.exports = router;

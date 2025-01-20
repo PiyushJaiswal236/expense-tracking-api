@@ -51,7 +51,12 @@ module.exports = router;
  *       - jwtAuth: []
  *     parameters:
  *       - in: query
- *         name: personId
+ *         name: order
+ *         schema:
+ *           type: string
+ *         description: Filter orders by order ID
+ *       - in: query
+ *         name: person
  *         schema:
  *           type: string
  *         description: Filter orders by person ID

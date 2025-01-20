@@ -4,9 +4,12 @@ const httpStatus = require("http-status");
 const pick = require("../utils/pick");
 
 const getAllOrders = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["status", "type"]);
+  const filter = pick(req.query, ["status", "type"],);
   filter.user = req.user.id;
   const query = req.query;
+  if(query.order){
+    filter._id = req.query.order;
+  }
   if (query.startDate) {
     filter.createdAt = { $gte: new Date(query.startDate) };
   }
@@ -22,8 +25,9 @@ const getAllOrders = catchAsync(async (req, res) => {
     filter.totalAmount.$lte = query.maxAmount;
   }
   const options = pick(req.query, ["sortBy", "limit", "page"]);
-  options.populate = "person  purchaseItemList";
-  const orders = await orderService.getAllOrders(filter, options);
+  options.populate = "person purchaseItemList";
+
+  const orders = await orderService.getOrder(filter, options);
   orders.orders = orders.results;
   delete orders.results;
   res.status(httpStatus.OK).json({ ...orders, status: 1, message: "success" });
@@ -53,7 +57,7 @@ const updateOrder = catchAsync(async (req, res) => {
     req.params.orderId,
     orderBody
   );
-  res.status(httpStatus.OK).send(order);
+  res.status(httpStatus.OK).json({statusCode:1,message: "order updated",order});
 });
 
 const deleteOrder = catchAsync(async (req, res) => {

@@ -13,6 +13,60 @@ const getAllOrders = async (filter, options) => {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
     }
 };
+const getOrder = async (filter, options) => {
+    try {
+        let sort = "";
+        if (options.sortBy) {
+            const sortingCriteria = [];
+            options.sortBy.split(",").forEach((sortOption) => {
+                const [key, order] = sortOption.split(":");
+                sortingCriteria.push((order === "desc" ? "-" : "") + key);
+            });
+            sort = sortingCriteria.join(" ");
+        } else {
+            sort = "createdAt";
+        }
+        // Default values for pagination
+        const page = options.page && parseInt(options.page, 10) > 0 ? parseInt(options.page, 10) : 1;
+        const limit = options.limit && parseInt(options.limit, 10) > 0 ? parseInt(options.limit, 10) : 10;
+        const skip = (page - 1) * limit;
+
+        // Build the query directly in Mongoose
+        const query = Order.find(filter)
+            .populate({
+                path: "person", // Populate 'person' field
+            })
+            .populate({
+                path: "purchaseItemList.item", // Populate 'item' within 'purchaseItemList'
+                select: "name description price unit category", // Select specific fields
+            })
+            .sort(sort) // Apply sorting directly
+            .skip(skip) // Skip records for pagination
+            .limit(limit); // Limit the number of records
+
+        // Execute the query and count documents simultaneously
+        const [results, totalResults] = await Promise.all([
+            query.exec(),
+            Order.countDocuments(filter), // Get total count of matching documents
+        ]);
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalResults / limit);
+
+        // Return the result in the required format
+        return {
+            results,
+            page,
+            limit,
+            totalPages,
+            totalResults,
+        };
+    } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+    }
+};
+
+
 const getReportOrder = async (userId, query) => {
     console.log("Received query parameters:", query);
 
@@ -335,6 +389,16 @@ const createOrder = async (user, orderBody) => {
 
 const updateOrder = async (user, orderId, orderBody) => {
     const previousOrder = await Order.findById(orderId);
+    if(previousOrder===undefined||previousOrder===null){
+        throw  new ApiError(httpStatus.BAD_REQUEST, `Order with id ${orderId} not found`);
+    }
+    if(orderBody.purchaseItemList!==undefined){
+        for(let i = 0; i < orderBody.purchaseItemList.length; i++){
+
+        orderBody.purchaseItemList[i].item = orderBody.purchaseItemList[i].itemId;
+        delete orderBody.purchaseItemList[i].itemId;
+        }
+    }
     const newOrder = await Order.findByIdAndUpdate(orderId, orderBody, {
         new: true,
     });
@@ -437,6 +501,7 @@ const deleteOrder = async (user, orderId) => {
 module.exports = {
     createOrder,
     getAllOrders,
+    getOrder,
     getOrderGroupedByDateAndPerson,
     getReportOrder,
     updateOrder,

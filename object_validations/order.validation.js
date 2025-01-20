@@ -4,6 +4,7 @@ const {isObjectIdOrHexString} = require("mongoose");
 
 const getOrders = {
     query: Joi.object().keys({
+        order: Joi.custom(objectId),
         person: Joi.custom(objectId),
         status: Joi.string().valid("pending", "completed"),
         type: Joi.string().valid("sale", "purchase"),

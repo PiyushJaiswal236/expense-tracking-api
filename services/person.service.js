@@ -5,12 +5,16 @@ const httpStatus = require("http-status");
 const createPerson = async (user, personBody, file) => {
     personBody.user = user;
     console.log("create personbody",personBody);
+
+
     const person = await Person.create(personBody);
     user.persons.push(person.id);
     if (file !== undefined) {
         person.image = file.id;
         person.save();
     }
+
+
     if (person.totalOverdue > 0) {
         if (person.type === "customer") {
             user.pendingReceivable = user.pendingReceivable + person.totalOverdue;
@@ -51,6 +55,9 @@ const queryPersons = async (userId, filter, options) => {
     });
     return persons;
 };
+
+
+
 // todo check the user.persons.contains(person)
 const updatePerson = async (user, personId, updatedBody) => {
     const person = await Person.findById(personId);

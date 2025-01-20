@@ -3,6 +3,7 @@ const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/CatchAsync");
 const { userService } = require("../services");
+const User = require("../models/user.model");
 
 const createUser = catchAsync(async (req, res,file) => {
   if (file !== undefined) {
@@ -27,6 +28,14 @@ const getUser = catchAsync(async (req, res) => {
   res.send(user);
 });
 
+const getUserShortSummery = catchAsync(async (req, res) => {
+  const user = await userService.getUserById(req.user.id,"pendingPayable pendingReceivable");
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  res.json({user,statusCode:1,message:"Successfully fetched"});
+});
+
 const updateUser = catchAsync(async (req, res) => {
   const user = await userService.updateUserById(req.params.userId, req.body,req.file);
   console.log("-----------------");
@@ -43,6 +52,7 @@ module.exports = {
   createUser,
   getUsers,
   getUser,
+  getUserShortSummery,
   updateUser,
   deleteUser,
 };
