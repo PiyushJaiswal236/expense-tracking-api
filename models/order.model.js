@@ -69,6 +69,7 @@ const orderSchema = mongoose.Schema(
     },
     {
         timestamps: true,
+        strictPopulated: false,
     }
 )
 orderSchema.plugin(toJSON);
