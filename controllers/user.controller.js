@@ -40,7 +40,7 @@ const updateUser = catchAsync(async (req, res) => {
   const user = await userService.updateUserById(req.params.userId, req.body,req.file);
   console.log("-----------------");
   console.log(user);
-  res.status(httpStatus.OK).json({message: "User updated successfully.",statusCode:1});
+  res.status(httpStatus.OK).json({message: "User updated successfully.",statusCode:1,user});
 });
 
 const deleteUser = catchAsync(async (req, res) => {
