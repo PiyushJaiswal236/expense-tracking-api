@@ -13,9 +13,9 @@ const swaggerDef = {
   },
   servers: [
     {
-      // url: `https://expense-tracking-api-0tiy.onrender.com:${config.port}/v1`,
       url: `http://localhost:${config.port}/v1`,
     },
+    { url: `https://expense-track.duckdns.org/v1`, description: "Vps Server" },
   ],
 };
 
