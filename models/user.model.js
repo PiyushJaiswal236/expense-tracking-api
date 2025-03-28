@@ -19,7 +19,7 @@ const userSchema = mongoose.Schema(
             type: String,
             required: true,
             unique: true,
-            trim: true,
+            trim: true, 
             lowercase: true,
             validate(value) {
                 if (!validator.isEmail(value)) {
@@ -60,6 +60,7 @@ const userSchema = mongoose.Schema(
             type: String,
             enum: roles,
             default: "user",
+            trim: true,
         },
         inventory: {
             type: mongoose.Schema.Types.ObjectId,
@@ -126,7 +127,7 @@ userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
  */
 userSchema.methods.isPasswordMatch = async function (password) {
     const user = this;
-    return bcrypt.compare(password, user.password);
+    return await bcrypt.compare(password, user.password);
 };
 
 userSchema.pre("save", async function (next) {

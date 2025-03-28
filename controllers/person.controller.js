@@ -23,9 +23,9 @@ const createPerson = catchAsync(async (req, res) => {
 
 const updatePerson = catchAsync(async (req, res) => {
     const personId = req.params.personId;
-    const updatedBody = req.body;
+    const updatedBody =  pick(req.body ,['name','type','email','phoneNumber','shopNumber']);
     const updatedPerson = await personService.updatePerson(req.user,personId,updatedBody);
-    res.status(httpStatus.OK).json({statusCode : 1 ,updatedPerson});
+    res.status(httpStatus.OK).json({statusCode : 1 ,updatedPerson,message:"person updated successfully"});
 })
 
 const deletePerson = catchAsync(async (req, res) => {

@@ -104,19 +104,19 @@ const getReportOrder = async (userId, query) => {
     if (status) match.status = status;
     if (type) match.type = type;
     if (startDate)
-        match.createdAt = { ...match.createdAt, $gte: new Date(startDate) };
+        match.createdAt = {...match.createdAt, $gte: new Date(startDate)};
     if (endDate)
-        match.createdAt = { ...match.createdAt, $lte: new Date(endDate) };
+        match.createdAt = {...match.createdAt, $lte: new Date(endDate)};
     if (minAmount)
-        match.totalAmount = { ...match.totalAmount, $gte: parseFloat(minAmount) };
+        match.totalAmount = {...match.totalAmount, $gte: parseFloat(minAmount)};
     if (maxAmount)
-        match.totalAmount = { ...match.totalAmount, $lte: parseFloat(maxAmount) };
+        match.totalAmount = {...match.totalAmount, $lte: parseFloat(maxAmount)};
 
     console.log("Constructed match filter:", match);
 
     // Parse sortBy parameter
     const [sortField, sortOrder] = sortBy.split(":");
-    const sort = { [sortField]: sortOrder === "desc" ? -1 : 1 };
+    const sort = {[sortField]: sortOrder === "desc" ? -1 : 1};
     console.log("Sorting criteria:", sort);
 
     // Pagination parameters
@@ -126,7 +126,7 @@ const getReportOrder = async (userId, query) => {
 
     // Aggregation pipeline
     const pipeline = [
-        { $match: match }, // Filter orders by user and other filters
+        {$match: match}, // Filter orders by user and other filters
         {
             $lookup: {
                 from: "people", // Reference to the 'persons' collection
@@ -135,11 +135,11 @@ const getReportOrder = async (userId, query) => {
                 as: "personDetails",
             },
         },
-        { $unwind: { path: "$personDetails", preserveNullAndEmptyArrays: true } },
+        {$unwind: {path: "$personDetails", preserveNullAndEmptyArrays: true}},
         {
             $group: {
                 _id: "$person",
-                personDetails: { $first: "$personDetails" },
+                personDetails: {$first: "$personDetails"},
                 orders: {
                     $push: {
                         _id: "$_id",
@@ -152,17 +152,17 @@ const getReportOrder = async (userId, query) => {
                         createdAt: "$createdAt",
                     },
                 },
-                totalAmountPaid: { $sum: "$amountPaid" }, // Sum of all orders' amountPaid
+                totalAmountPaid: {$sum: "$amountPaid"}, // Sum of all orders' amountPaid
             },
         },
-        { $sort: sort }, // Sort orders
+        {$sort: sort}, // Sort orders
         {
             $facet: {
                 metadata: [
-                    { $count: "total" },
-                    { $addFields: { page: parseInt(page) } },
+                    {$count: "total"},
+                    {$addFields: {page: parseInt(page)}},
                 ],
-                data: [{ $skip: skip }, { $limit: limitNum }],
+                data: [{$skip: skip}, {$limit: limitNum}],
             },
         },
 
@@ -176,21 +176,20 @@ const getReportOrder = async (userId, query) => {
 
         // Extract data and metadata
         const data = result[0]?.data || [];
-        const metadata = result[0]?.metadata[0] || { total: 0, page: parseInt(page) };
+        const metadata = result[0]?.metadata[0] || {total: 0, page: parseInt(page)};
         const totalPages = Math.ceil(metadata.total / limitNum);
         // Calculate the total amount separately
         const totalPipeline = [
-            { $match: match },
+            {$match: match},
             {
                 $group: {
                     _id: null,
-                    totalAmountPaid: { $sum: "$amountPaid" },
+                    totalAmountPaid: {$sum: "$amountPaid"},
                 },
             },
         ];
         const totalResult = await Order.aggregate(totalPipeline);
         const totalAmountPaid = totalResult.length > 0 ? totalResult[0].totalAmountPaid : 0;
-
 
 
         // const totalAmount = data.reduce(
@@ -238,19 +237,19 @@ const getOrderGroupedByDateAndPerson = async (userId, query) => {
     console.log("endDate:", endDate);
 
     // Initialize filters
-    const match = { user: new mongoose.Types.ObjectId(userId) };
+    const match = {user: new mongoose.Types.ObjectId(userId)};
     if (personId) match._id = new mongoose.Types.ObjectId(personId);
     if (type) match.type = type;
     if (startDate)
-        match['orders.createdAt'] = { ...match['orders.createdAt'], $gte: new Date(startDate) };
+        match['orders.createdAt'] = {...match['orders.createdAt'], $gte: new Date(startDate)};
     if (endDate)
-        match['orders.createdAt'] = { ...match['orders.createdAt'], $lte: new Date(endDate) };
+        match['orders.createdAt'] = {...match['orders.createdAt'], $lte: new Date(endDate)};
 
     console.log("Constructed match filter:", match);
 
     // Parse sortBy parameter
     const [sortField, sortOrder] = sortBy.split(":");
-    const sort = { [sortField]: sortOrder === "desc" ? -1 : 1 };
+    const sort = {[sortField]: sortOrder === "desc" ? -1 : 1};
 
     // Pagination parameters
     const skip = (page - 1) * limit;
@@ -258,7 +257,7 @@ const getOrderGroupedByDateAndPerson = async (userId, query) => {
 
     // Aggregation pipeline
     const pipeline = [
-        { $match: match }, // Match persons based on filters
+        {$match: match}, // Match persons based on filters
         {
             $lookup: {
                 from: 'orders', // Lookup orders collection
@@ -267,18 +266,28 @@ const getOrderGroupedByDateAndPerson = async (userId, query) => {
                 as: 'orders',
             },
         },
-        { $unwind: '$orders' },
+        {$unwind: '$orders'},
         {
             $addFields: {
-                orderDate: { $dateToString: { format: '%Y-%m-%d', date: '$orders.createdAt' } },
+                orderDate: {$dateToString: {format: '%Y-%m-%d', date: '$orders.createdAt'}},
             },
         },
         {
             $group: {
-                _id: { orderDate: '$orderDate', personId: '$_id' },
-                person: { $first: { $arrayToObject: { $filter: { input: { $objectToArray: '$$ROOT' }, as: 'field', cond: { $ne: ['$$field.k', 'orders'] } } } } }, // Include all fields except 'orders'
-                orders: { $push: '$orders' },
-                personPendingAmountSum: { $sum: '$orders.amountPending' },
+                _id: {orderDate: '$orderDate', personId: '$_id'},
+                person: {
+                    $first: {
+                        $arrayToObject: {
+                            $filter: {
+                                input: {$objectToArray: '$$ROOT'},
+                                as: 'field',
+                                cond: {$ne: ['$$field.k', 'orders']}
+                            }
+                        }
+                    }
+                }, // Include all fields except 'orders'
+                orders: {$push: '$orders'},
+                personPendingAmountSum: {$sum: '$orders.amountPending'},
             },
         },
         {
@@ -291,14 +300,14 @@ const getOrderGroupedByDateAndPerson = async (userId, query) => {
                         personPendingAmountSum: '$personPendingAmountSum',
                     },
                 },
-                totalPendingAmount: { $sum: '$personPendingAmountSum' },
+                totalPendingAmount: {$sum: '$personPendingAmountSum'},
             },
         },
-        { $sort: { _id: -1 } }, // Sort by date descending
+        {$sort: {_id: -1}}, // Sort by date descending
         {
             $facet: {
-                metadata: [{ $count: 'total' }, { $addFields: { page: parseInt(page, 10) } }],
-                data: [{ $skip: skip }, { $limit: limitNum }],
+                metadata: [{$count: 'total'}, {$addFields: {page: parseInt(page, 10)}}],
+                data: [{$skip: skip}, {$limit: limitNum}],
             },
         },
     ];
@@ -309,7 +318,7 @@ const getOrderGroupedByDateAndPerson = async (userId, query) => {
 
         // Extract data and metadata
         const data = result[0]?.data || [];
-        const metadata = result[0]?.metadata[0] || { total: 0, page: parseInt(page, 10) };
+        const metadata = result[0]?.metadata[0] || {total: 0, page: parseInt(page, 10)};
         const totalPages = Math.ceil(metadata.total / limitNum);
 
         const response = {
@@ -348,20 +357,20 @@ const createOrder = async (user, orderBody) => {
                 : "A Purchase order cannot be placed for Customer";
         throw new ApiError(httpStatus.BAD_REQUEST, errorMessage);
     }
-        const {inventory} = await User.findById(user.id)
-            .select("inventory")
-            .populate("inventory");
-        for (const item of orderBody.purchaseItemList) {
-            if (!inventory.items.includes(item.item)) {
-                if(orderBody.type === "sale") {
-                    throw new ApiError(
-                        httpStatus.NOT_FOUND,
-                        `Item with id ${item.item} not found`
-                    );
-                }
-                await inventoryService.addItemToInventory(inventory.id,item)
+    const {inventory} = await User.findById(user.id)
+        .select("inventory")
+        .populate("inventory");
+    for (const item of orderBody.purchaseItemList) {
+        if (!inventory.items.includes(item.item)) {
+            if (orderBody.type === "sale") {
+                throw new ApiError(
+                    httpStatus.NOT_FOUND,
+                    `Item with id ${item.item} not found`
+                );
             }
+            // await inventoryService.addItemToInventory(inventory.id,item)
         }
+    }
 
     console.log("logggggg");
     console.log(orderBody);
@@ -369,7 +378,7 @@ const createOrder = async (user, orderBody) => {
         ...orderBody,
         user: user.id,
     };
-    console.log("person",person)
+    console.log("person", person)
     const order = await Order.create(orderBody);
     user.orders.push(order.id);
     if (order.type === "sale") {
@@ -378,7 +387,7 @@ const createOrder = async (user, orderBody) => {
         user.pendingPayable = order.amountPending + user.pendingPayable;
     }
     await user.save();
-    person.user= user.id;
+    person.user = user.id;
     person.orders.push(order.id);
     person.shopNumber = orderBody.shopNumber;
     person.totalOverdue = person.totalOverdue + order.amountPending;
@@ -389,14 +398,14 @@ const createOrder = async (user, orderBody) => {
 
 const updateOrder = async (user, orderId, orderBody) => {
     const previousOrder = await Order.findById(orderId);
-    if(previousOrder===undefined||previousOrder===null){
-        throw  new ApiError(httpStatus.BAD_REQUEST, `Order with id ${orderId} not found`);
+    if (previousOrder === undefined || previousOrder === null) {
+        throw new ApiError(httpStatus.BAD_REQUEST, `Order with id ${orderId} not found`);
     }
-    if(orderBody.purchaseItemList!==undefined){
-        for(let i = 0; i < orderBody.purchaseItemList.length; i++){
+    if (orderBody.purchaseItemList !== undefined) {
+        for (let i = 0; i < orderBody.purchaseItemList.length; i++) {
 
-        orderBody.purchaseItemList[i].item = orderBody.purchaseItemList[i].itemId;
-        delete orderBody.purchaseItemList[i].itemId;
+            orderBody.purchaseItemList[i].item = orderBody.purchaseItemList[i].itemId;
+            delete orderBody.purchaseItemList[i].itemId;
         }
     }
     const newOrder = await Order.findByIdAndUpdate(orderId, orderBody, {
@@ -422,7 +431,7 @@ const updateOrder = async (user, orderId, orderBody) => {
         const previousPerson = await Person.findById(previousOrder.person);
         const newPerson = await Person.findById(orderBody.person);
 
-        previousPerson.orders.pull(order.id);
+        previousPerson.orders.pull(orderBody.id);
         newPerson.orders.push(orderBody.id);
 
         previousPerson.totalOverdue =

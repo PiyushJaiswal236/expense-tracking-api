@@ -7,6 +7,8 @@ const {
   emailService,
   smsService,
 } = require("../services");
+const {User} = require("../models");
+const bcrypt = require("bcryptjs");
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
@@ -32,12 +34,15 @@ const refreshTokens = catchAsync(async (req, res) => {
 
 // TODO : implement pheone no otp generation
 const forgotPassword = catchAsync(async (req, res) => {
-  // const resetPasswordToken = await tokenService.generateResetPasswordToken(
-  //   req.body.email
-  // );
-  await smsService.sendOtpSms("7499582803");
-  // await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
-  res.status(httpStatus.NO_CONTENT).send();
+  // // const resetPasswordToken = await tokenService.generateResetPasswordToken(
+  // //   req.body.email
+  // // );
+  // await smsService.sendOtpSms("7499582803");
+  // // await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
+  const user = await userService.getUserByEmail(req.body.email);
+  user.password =  req.body.password;
+  await  user.save();
+  res.status(httpStatus.OK).send({message: "Password changed successfully.",status: "1"});
 });
 
 const resetPassword = catchAsync(async (req, res) => {

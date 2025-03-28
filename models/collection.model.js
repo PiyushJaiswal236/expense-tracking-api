@@ -6,10 +6,12 @@ const collectionSchema = mongoose.Schema(
         user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            trim: true,
         },
         bankName: {
             type: String,
             required: true,
+            trim: true,
         },
         image: {
             type: mongoose.Schema.Types.ObjectId,
@@ -21,11 +23,13 @@ const collectionSchema = mongoose.Schema(
         },
         agentName: {
             type: String,
-            required: true
+            required: true,
+            trim: true,
         },
         agentPhoneNumber: {
             type: String,
-            required: true
+            required: true,
+            trim: true,
         },
         transactionHistory: [{
             transaction: {

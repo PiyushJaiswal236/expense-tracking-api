@@ -5,12 +5,14 @@ const itemSchema = mongoose.Schema(
     {
         name: {
             type: String,
-            required: true
+            required: true,
+            trim: true,
         },
         category: {
             type: String,
             // enum: ["Fresh Vegetables", "Fresh Fruits", "Seasonal", 'Leafy & Herbs', "Frozen Veg"],
             // required: true,
+            trim: true,
         },
         image: {
             type: mongoose.Schema.Types.ObjectId,
@@ -18,6 +20,7 @@ const itemSchema = mongoose.Schema(
         },
         description: {
             type: String,
+            trim: true,
         }
     }
 )

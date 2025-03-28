@@ -14,13 +14,20 @@ const createPerson = async (user, personBody, file) => {
         person.save();
     }
 
-
     if (person.totalOverdue > 0) {
+        var orderBody ={};
+        orderBody.user = user.id;
+        orderBody.person = person.id;
+        orderBody.amountPaid = 0;
+        orderBody.amountPending = person.totalOverdue;
         if (person.type === "customer") {
+            orderBody.type = "sale";
             user.pendingReceivable = user.pendingReceivable + person.totalOverdue;
         } else {
+            orderBody.type = "purchase";
             user.pendingPayable = user.pendingPayable + person.totalOverdue;
         }
+        await Order.create(orderBody);
     }
     user.save();
     return person;

@@ -10,7 +10,8 @@ const orderSchema = mongoose.Schema(
         user :{
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true
+            required: true,
+            trim: true,
         },
         person: {
             type: mongoose.Schema.Types.ObjectId,
@@ -20,12 +21,14 @@ const orderSchema = mongoose.Schema(
         type: {
             type: String,
             required: true,
-            enum: ["purchase", "sale"]
+            enum: ["purchase", "sale"],
+            trim: true,
         },
         status: {
             type: String,
             required: true,
             enum: ["completed", "pending"],
+            trim: true,
         },
         purchaseItemList: [
             {
@@ -47,7 +50,8 @@ const orderSchema = mongoose.Schema(
                 unit:{
                     type: String,
                     required: true,
-                    enum: ["kilogram", "gram","number"]
+                    enum: ["kilogram", "gram","number"],
+                    trim: true,
                 }
             }
         ],

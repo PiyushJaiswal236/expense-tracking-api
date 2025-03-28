@@ -7,6 +7,7 @@ const personSchema = mongoose.Schema(
             type:mongoose.Schema.Types.ObjectId,
             ref:"User",
             required:true,
+            trim: true,
         },
         image:{
           type:mongoose.Schema.Types.ObjectId,
@@ -14,7 +15,8 @@ const personSchema = mongoose.Schema(
         },
         name: {
             type: String,
-            required: true
+            required: true,
+            trim: true,
         },
         phoneNumber: {
             type: String,

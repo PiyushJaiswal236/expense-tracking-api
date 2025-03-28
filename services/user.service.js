@@ -4,6 +4,8 @@ const ApiError = require("../utils/ApiError");
 const Inventory = require("../models/inventory.model");
 const imageService = require("./image.service");
 const bcrypt = require("bcryptjs");
+const mongoose = require("mongoose");
+const {getBucket} = require("../config/database");
 
 /**
  * Create a user
@@ -59,7 +61,7 @@ const getUserById = async (id, fieldsToSelect = null) => {
  * @returns {Promise<User>}
  */
 const getUserByEmail = async (email) => {
-    return User.findOne({email});
+    return  User.findOne({email});
 };
 
 
@@ -75,32 +77,32 @@ const getUserWithPopulatedFields = async (email) => {
             })
             .populate({
                 path: 'persons', // Populate the persons array
-                populate: {
-                    path: 'orders', // Populate the orders inside persons
-                    select: 'status totalAmount', // Select specific fields to include from Order model
-                    populate: {
-                        path: 'person', // Populate person field inside orders (if needed)
-                        select: 'name type shopNumber', // Select specific fields to include from Person model
-                    },
-                },
+                // populate: {
+                //     path: 'orders', // Populate the orders inside persons
+                //     select: 'status totalAmount', // Select specific fields to include from Order model
+                //     populate: {
+                //         path: 'person', // Populate person field inside orders (if needed)
+                //         select: 'name type shopNumber', // Select specific fields to include from Person model
+                //     },
+                // },
             })
-            .populate({
-                path: 'orders', // Populate the orders array
-                populate: [
-                    {
-                        path: 'person', // Populate the person reference inside orders
-                        select: 'name phoneNumber', // Select specific fields from Person model
-                    },
-                    {
-                        path: 'user', // Populate the user reference inside orders
-                        select: 'name email', // Select specific fields from User model
-                    },
-                    {
-                        path: 'purchaseItemList.item', // Populate the items inside purchaseItemList in orders
-                        select: 'name price unit', // Select specific fields from Item model
-                    },
-                ],
-            });
+        // .populate({
+        //     path: 'orders', // Populate the orders array
+        //     populate: [
+        //         {
+        //             path: 'person', // Populate the person reference inside orders
+        //             select: 'name phoneNumber', // Select specific fields from Person model
+        //         },
+        //         {
+        //             path: 'user', // Populate the user reference inside orders
+        //             select: 'name email', // Select specific fields from User model
+        //         },
+        //         {
+        //             path: 'purchaseItemList.item', // Populate the items inside purchaseItemList in orders
+        //             select: 'name price unit', // Select specific fields from Item model
+        //         },
+        //     ],
+        // });
 
         if (!user) {
             return new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -122,6 +124,9 @@ const getUserWithPopulatedFields = async (email) => {
  */
 
 const updateUserById = async (userId, updateBody, file) => {
+    console.log("+6+6+6+6+6+6")
+    console.log(file)
+    console.log("+6+6++6+6+6+66")
     let user = await getUserById(userId);
     console.log(!(updateBody.confirmPassword === undefined))
     console.log(updateBody.confirmPassword !== undefined)
@@ -144,8 +149,19 @@ const updateUserById = async (userId, updateBody, file) => {
     user = await User.findByIdAndUpdate(userId, updateBody, {new: true});
 
     if (file !== undefined) {
+        console.log("akfkfsjlfjlksjfljlfjslfjldsjflsjflsdjflsjflsdjf")
+        console.log(file)
+        console.log("akfkfsjlfjlksjfljlfjslfjldsjflsjflsdjflsjflsdjf")
         const oldimg = user.image;
-        await imageService.deleteImage(oldimg);
+        const bucket = getBucket();
+        const OldimgInStorage = await bucket.find({_id: new mongoose.Types.ObjectId(oldimg)}).toArray();
+        if (OldimgInStorage.length !== 0) {
+            await imageService.deleteImage(oldimg);
+        }
+
+        console.log("image id"+file.id);
+
+        console.log(file);
         user.image = file.id;
         await user.save();
     }

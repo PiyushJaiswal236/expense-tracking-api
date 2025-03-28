@@ -24,6 +24,7 @@ router.post('/',
 router.patch(
     '/:personId',
     auth("manageSelf"),
+    saveToGridFS,
     validate(personValidation.updatePerson),
     personController.updatePerson
 );

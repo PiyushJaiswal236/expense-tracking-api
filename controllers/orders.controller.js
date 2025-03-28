@@ -30,6 +30,9 @@ const getAllOrders = catchAsync(async (req, res) => {
   const orders = await orderService.getOrder(filter, options);
   orders.orders = orders.results;
   delete orders.results;
+  console.log("---------------get orders=");
+  console.log(orders);
+  console.log("---------------get orders=");
   res.status(httpStatus.OK).json({ ...orders, status: 1, message: "success" });
 });
 
